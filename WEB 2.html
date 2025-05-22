@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelaCash Agencies</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #1a73e8;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Login/Signup Page Styles */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .auth-box {
+            background-color: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .auth-box h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1a73e8;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #0d5bba;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .auth-footer a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard-header {
+            background-color: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .account-status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .inactive {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .dashboard-nav {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .nav-item {
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: #333;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: #1a73e8;
+            color: white;
+        }
+        
+        .dashboard-content {
+            background-color: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 300px;
+        }
+        
+        .package {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .package h3 {
+            color: #1a73e8;
+        }
+        
+        .package-price {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .video-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .video-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        .quiz-question {
+            margin-bottom: 15px;
+        }
+        
+        .referral-link {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            word-break: break-all;
+        }
+        
+        .withdrawal-form {
+            max-width: 500px;
+        }
+        
+        .support-contact {
+            margin: 15px 0;
+        }
+        
+        .account-info {
+            margin-bottom: 20px;
+        }
+        
+        .chat-box {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: none;
+        }
+        
+        .chat-header {
+            background-color: #1a73e8;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .chat-messages {
+            height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .chat-input button {
+            margin-left: 10px;
+        }
+        
+        .chat-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #1a73e8;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="login-page" class="auth-container">
+        <div class="auth-box">
+            <h2>Login to HelaCash</h2>
+            <div class="form-group">
+                <label for="login-username">Username or Phone Number</label>
+                <input type="text" id="login-username" placeholder="Username or +254...">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" placeholder="Password">
+            </div>
+            <button id="login-btn" class="btn">Login</button>
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="#" id="go-to-register">Register</a></p>
+                <p><a href="#" id="go-to-forgot">Forgot Password?</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Page -->
+    <div id="register-page" class="auth-container" style="display: none;">
+        <div class="auth-box">
+            <h2>Register for HelaCash</h2>
+            <div class="form-group">
+                <label for="reg-username">Username (One name only)</label>
+                <input type="text" id="reg-username" placeholder="Username">
+            </div>
+            <div class="form-group">
+                <label for="reg-phone">Phone Number (Kenyan only)</label>
+                <input type="text" id="reg-phone" placeholder="+254...">
+            </div>
+            <div class="form-group">
+                <label for="reg-password">Password (6+ characters)</label>
+                <input type="password" id="reg-password" placeholder="Password">
+            </div>
+            <div class="form-group">
+                <label for="reg-confirm-password">Confirm Password</label>
+                <input type="password" id="reg-confirm-password" placeholder="Confirm Password">
+            </div>
+            <div class="form-group" style="display: flex; align-items: center;">
+                <button id="send-code-btn" class="btn" style="width: auto; margin-right: 10px;">Send Code</button>
+                <input type="text" id="verification-code" placeholder="Verification Code" style="flex: 1;">
+            </div>
+            <button id="confirm-reg-btn" class="btn" style="display: none;">Confirm Registration</button>
+            <div class="auth-footer">
+                <p>Already have an account? <a href="#" id="go-to-login">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Page -->
+    <div id="forgot-page" class="auth-container" style="display: none;">
+        <div class="auth-box">
+            <h2>Reset Password</h2>
+            <div class="form-group">
+                <label for="forgot-phone">Phone Number</label>
+                <div style="display: flex;">
+                    <input type="text" id="forgot-phone" placeholder="+254..." style="flex: 1;">
+                    <button id="send-reset-code-btn" class="btn" style="width: auto; margin-left: 10px;">Send Code</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="reset-code">Verification Code</label>
+                <input type="text" id="reset-code" placeholder="Enter code">
+            </div>
+            <div class="form-group">
+                <label for="new-password">New Password</label>
+                <input type="password" id="new-password" placeholder="New Password">
+            </div>
+            <div class="form-group">
+                <label for="confirm-new-password">Confirm New Password</label>
+                <input type="password" id="confirm-new-password" placeholder="Confirm New Password">
+            </div>
+            <button id="reset-password-btn" class="btn">Reset Password</button>
+            <div class="auth-footer">
+                <p>Remember your password? <a href="#" id="go-to-login-from-forgot">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard-page" style="display: none;">
+        <div class="container">
+            <div class="dashboard-header">
+                <div>
+                    <h1>Hello, <span id="user-name-display">Username</span></h1>
+                    <p>Account Status: <span id="account-status" class="account-status inactive">Inactive</span></p>
+                </div>
+                <div>
+                    <p>Package: <span id="user-package">None</span></p>
+                </div>
+            </div>
+            
+            <div class="dashboard-nav">
+                <div class="nav-item active" data-section="home">Home</div>
+                <div class="nav-item" data-section="packages">Packages</div>
+                <div class="nav-item" data-section="earn">Earn</div>
+                <div class="nav-item" data-section="referral">Referral</div>
+                <div class="nav-item" data-section="withdraw">Withdraw</div>
+                <div class="nav-item" data-section="support">Support</div>
+                <div class="nav-item" data-section="account">Account</div>
+            </div>
+            
+            <div class="dashboard-content">
+                <!-- Home Section -->
+                <div id="home-section">
+                    <h2>Welcome to HelaCash Agencies</h2>
+                    <p>Start earning today by viewing ads, watching videos, and taking quizzes!</p>
+                    <div id="daily-stats" style="margin-top: 20px;">
+                        <h3>Today's Earnings</h3>
+                        <p>Videos Watched: <span id="videos-watched">0</span>/<span id="max-videos">0</span></p>
+                        <p>Quizzes Taken: <span id="quizzes-taken">0</span>/<span id="max-quizzes">0</span></p>
+                        <p>Today's Earnings: KSh <span id="todays-earnings">0</span></p>
+                        <p>Total Balance: KSh <span id="total-balance">0</span></p>
+                    </div>
+                </div>
+                
+                <!-- Packages Section -->
+                <div id="packages-section" style="display: none;">
+                    <h2>Available Packages</h2>
+                    <div class="package">
+                        <h3>Economy Package</h3>
+                        <p class="package-price">KSh 600</p>
+                        <p>Earn KSh 10 per video view (max 5/day)</p>
+                        <p>Earn KSh 50 from quizzes (max 2/day)</p>
+                        <p>KSh 50 per referral</p>
+                        <p>Withdrawal passkey: KSh 500</p>
+                        <button class="btn buy-package" data-package="economy">Buy Now</button>
+                    </div>
+                    <div class="package">
+                        <h3>Business Package</h3>
+                        <p class="package-price">KSh 1,250</p>
+                        <p>Earn KSh 10 per video view (max 7/day)</p>
+                        <p>Earn KSh 100 from quizzes (max 4/day)</p>
+                        <p>KSh 100 per referral</p>
+                        <p>Withdrawal passkey: KSh 650</p>
+                        <button class="btn buy-package" data-package="business">Buy Now</button>
+                    </div>
+                    <div class="package">
+                        <h3>Premium Package</h3>
+                        <p class="package-price">KSh 2,200</p>
+                        <p>Earn KSh 15 per video view (max 15/day)</p>
+                        <p>Earn KSh 150 from quizzes (max 6/day)</p>
+                        <p>KSh 150 per referral</p>
+                        <p>Withdrawal passkey: KSh 800</p>
+                        <button class="btn buy-package" data-package="premium">Buy Now</button>
+                    </div>
+                </div>
+                
+                <!-- Payment Confirmation Section -->
+                <div id="payment-section" style="display: none;">
+                    <h2>Confirm Payment</h2>
+                    <div class="form-group">
+                        <label for="payment-phone">Phone Number</label>
+                        <input type="text" id="payment-phone" placeholder="+254...">
+                    </div>
+                    <p id="payment-instruction">You will receive a prompt to pay KSh 0 to HelaCash Agencies.</p>
+                    <button id="confirm-payment-btn" class="btn">Confirm Payment</button>
+                    <button id="cancel-payment-btn" class="btn" style="background-color: #f44336; margin-top: 10px;">Cancel</button>
+                </div>
+                
+                <!-- Earn Section -->
+                <div id="earn-section" style="display: none;">
+                    <h2>Earn Money</h2>
+                    <div style="margin-bottom: 20px;">
+                        <button id="show-videos-btn" class="btn">Watch Videos</button>
+                        <button id="show-quizzes-btn" class="btn" style="margin-left: 10px;">Take Quizzes</button>
+                    </div>
+                    
+                    <!-- Videos Subsection -->
+                    <div id="videos-subsection" style="display: none;">
+                        <h3>Watch Videos to Earn</h3>
+                        <p>Remaining videos today: <span id="remaining-videos">0</span></p>
+                        <div class="video-container" id="video-container">
+                            <!-- Videos will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Quizzes Subsection -->
+                    <div id="quizzes-subsection" style="display: none;">
+                        <h3>Take Quizzes to Earn</h3>
+                        <p>Remaining quizzes today: <span id="remaining-quizzes">0</span></p>
+                        <div id="quiz-selection">
+                            <h4>Select Quiz Topic</h4>
+                            <select id="quiz-topics" class="form-group">
+                                <option value="animals">Animals</option>
+                                <option value="forests">Forests</option>
+                                <option value="rivers">Rivers</option>
+                                <option value="deserts">Deserts</option>
+                                <option value="mountains">Mountains</option>
+                                <option value="hills">Hills</option>
+                                <option value="cities">Cities</option>
+                                <option value="countries">Countries</option>
+                                <option value="destinations">Destinations</option>
+                                <option value="fun-facts">Fun Facts</option>
+                            </select>
+                            <button id="start-quiz-btn" class="btn">Start Quiz</button>
+                        </div>
+                        
+                        <div id="quiz-container" style="display: none;">
+                            <div id="quiz-questions">
+                                <!-- Quiz questions will be loaded here -->
+                            </div>
+                            <button id="submit-quiz-btn" class="btn">Submit Quiz</button>
+                            <div id="quiz-result" style="display: none; margin-top: 20px;">
+                                <h4>Quiz Result</h4>
+                                <p>Score: <span id="quiz-score">0</span>/25</p>
+                                <p>Earned: KSh <span id="quiz-earnings">0</span></p>
+                                <button id="back-to-quizzes-btn" class="btn">Back to Quizzes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Referral Section -->
+                <div id="referral-section" style="display: none;">
+                    <h2>Referral Program</h2>
+                    <p>Earn money by referring friends to HelaCash!</p>
+                    <p>Your referral link:</p>
+                    <div class="referral-link" id="referral-link">
+                        https://helacash.com/register?ref=<span id="ref-username">username</span>
+                    </div>
+                    <p>Referral earnings: KSh <span id="referral-earnings">0</span></p>
+                    <p>Total referrals: <span id="total-referrals">0</span></p>
+                </div>
+                
+                <!-- Withdraw Section -->
+                <div id="withdraw-section" style="display: none;">
+                    <h2>Withdraw Earnings</h2>
+                    <p>Current balance: KSh <span id="withdraw-balance">0</span></p>
+                    <p>Minimum withdrawal: KSh 2,000</p>
+                    
+                    <div id="no-passkey-message" style="display: none;">
+                        <p>You need to purchase a withdrawal passkey to withdraw funds.</p>
+                        <p>Passkey price: KSh <span id="passkey-price">0</span></p>
+                        <button id="buy-passkey-btn" class="btn">Buy Passkey</button>
+                    </div>
+                    
+                    <div id="withdraw-form" style="display: none;">
+                        <div class="form-group">
+                            <label for="withdraw-phone">Phone Number</label>
+                            <input type="text" id="withdraw-phone" placeholder="+254...">
+                        </div>
+                        <div class="form-group">
+                            <label for="withdraw-amount">Amount (Minimum KSh 2,000)</label>
+                            <input type="number" id="withdraw-amount" placeholder="Amount">
+                        </div>
+                        <button id="submit-withdraw-btn" class="btn">Submit Withdrawal</button>
+                    </div>
+                    
+                    <div id="withdraw-history" style="margin-top: 20px;">
+                        <h3>Withdrawal History</h3>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Date</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Amount</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="withdraw-history-body">
+                                <!-- Withdrawal history will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Support Section -->
+                <div id="support-section" style="display: none;">
+                    <h2>Support</h2>
+                    <div class="support-contact">
+                        <h3>Contact Us</h3>
+                        <p>Email: <a href="mailto:helacash786@gmail.com">helacash786@gmail.com</a></p>
+                        <p>Phone: +254 110139665</p>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <h3>FAQs</h3>
+                        <div style="margin-bottom: 10px;">
+                            <p><strong>Q: How do I earn money on HelaCash?</strong></p>
+                            <p>A: You can earn by watching videos, taking quizzes, and referring friends.</p>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <p><strong>Q: When can I withdraw my earnings?</strong></p>
+                            <p>A: You can withdraw once you reach KSh 2,000 and have purchased a withdrawal passkey.</p>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <p><strong>Q: How do I upgrade my package?</strong></p>
+                            <p>A: Go to the Packages section and select the package you want to upgrade to.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Account Section -->
+                <div id="account-section" style="display: none;">
+                    <h2>Account Details</h2>
+                    <div class="account-info">
+                        <p><strong>Username:</strong> <span id="account-username">username</span></p>
+                        <p><strong>Phone Number:</strong> <span id="account-phone">+254...</span></p>
+                        <p><strong>Package:</strong> <span id="account-package">None</span></p>
+                        <p><strong>Joined Date:</strong> <span id="account-joined">date</span></p>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button id="logout-btn" class="btn">Log Out</button>
+                        <button id="delete-account-btn" class="btn" style="background-color: #f44336; margin-top: 10px;">Delete Account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Toggle and Box -->
+    <div class="chat-toggle" id="chat-toggle">💬</div>
+    <div class="chat-box" id="chat-box">
+        <div class="chat-header">
+            <span>HelaCash Support</span>
+            <span id="close-chat" style="cursor: pointer;">×</span>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div style="margin-bottom: 10px;">
+                <p><strong>HelaCash:</strong> Hello! How can I help you today?</p>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chat-input" placeholder="Type your message...">
+            <button id="send-chat-btn" class="btn" style="width: auto;">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Firebase - REPLACE WITH YOUR CONFIG
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // User data
+        let currentUser = null;
+        
+        // Packages data
+        const packages = {
+            economy: { price: 600, videoLimit: 5, videoEarnings: 10, quizLimit: 2, quizEarnings: 50, referralEarnings: 50, passkeyPrice: 500 },
+            business: { price: 1250, videoLimit: 7, videoEarnings: 10, quizLimit: 4, quizEarnings: 100, referralEarnings: 100, passkeyPrice: 650 },
+            premium: { price: 2200, videoLimit: 15, videoEarnings: 15, quizLimit: 6, quizEarnings: 150, referralEarnings: 150, passkeyPrice: 800 }
+        };
+        
+        // Sample videos data
+        const videos = [
+            { id: "tiktok1", source: "tiktok", title: "Funny TikTok #1" },
+            { id: "tiktok2", source: "tiktok", title: "Funny TikTok #2" },
+            { id: "youtube1", source: "youtube", title: "Interesting Facts #1" },
+            { id: "youtube2", source: "youtube", title: "Interesting Facts #2" },
+            { id: "ad1", source: "ad", title: "Special Offer #1" },
+            { id: "ad2", source: "ad", title: "Special Offer #2" }
+        ];
+        
+        // Sample quiz questions
+        const quizzes = {
+            animals: [
+                {
+                    question: "What is the largest land animal?",
+                    options: ["Elephant", "Giraffe", "Rhino", "Hippo"],
+                    answer: 0
+                },
+                {
+                    question: "Which animal is known as the 'King of the Jungle'?",
+                    options: ["Lion", "Tiger", "Leopard", "Cheetah"],
+                    answer: 0
+                },
+                {
+                    question: "What is the fastest land animal?",
+                    options: ["Cheetah", "Pronghorn Antelope", "Springbok", "Lion"],
+                    answer: 0
+                },
+                {
+                    question: "Which of these is not a mammal?",
+                    options: ["Dolphin", "Bat", "Penguin", "Whale"],
+                    answer: 2
+                },
+                {
+                    question: "How many hearts does an octopus have?",
+                    options: ["1", "2", "3", "4"],
+                    answer: 2
+                }
+            ],
+            forests: [
+                {
+                    question: "Which is the largest rainforest in the world?",
+                    options: ["Amazon", "Congo", "Daintree", "Sundarbans"],
+                    answer: 0
+                },
+                {
+                    question: "What percentage of the world's oxygen is produced by the Amazon rainforest?",
+                    options: ["5%", "10%", "20%", "50%"],
+                    answer: 2
+                }
+            ]
+            // Add more quiz topics as needed
+        };
+        
+        // Verification codes storage (temporary)
+        const verificationCodes = {};
+        
+        // DOM Elements
+        const loginPage = document.getElementById('login-page');
+        const registerPage = document.getElementById('register-page');
+        const forgotPage = document.getElementById('forgot-page');
+        const dashboardPage = document.getElementById('dashboard-page');
+        
+        // Login elements
+        const loginUsername = document.getElementById('login-username');
+        const loginPassword = document.getElementById('login-password');
+        const loginBtn = document.getElementById('login-btn');
+        const goToRegister = document.getElementById('go-to-register');
+        const goToForgot = document.getElementById('go-to-forgot');
+        
+        // Register elements
+        const regUsername = document.getElementById('reg-username');
+        const regPhone = document.getElementById('reg-phone');
+        const regPassword = document.getElementById('reg-password');
+        const regConfirmPassword = document.getElementById('reg-confirm-password');
+        const sendCodeBtn = document.getElementById('send-code-btn');
+        const verificationCode = document.getElementById('verification-code');
+        const confirmRegBtn = document.getElementById('confirm-reg-btn');
+        const goToLogin = document.getElementById('go-to-login');
+        
+        // Forgot password elements
+        const forgotPhone = document.getElementById('forgot-phone');
+        const sendResetCodeBtn = document.getElementById('send-reset-code-btn');
+        const resetCode = document.getElementById('reset-code');
+        const newPassword = document.getElementById('new-password');
+        const confirmNewPassword = document.getElementById('confirm-new-password');
+        const resetPasswordBtn = document.getElementById('reset-password-btn');
+        const goToLoginFromForgot = document.getElementById('go-to-login-from-forgot');
+        
+        // Dashboard elements
+        const userNameDisplay = document.getElementById('user-name-display');
+        const accountStatus = document.getElementById('account-status');
+        const userPackage = document.getElementById('user-package');
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.dashboard-content > div');
+        
+        // Package elements
+        const buyPackageBtns = document.querySelectorAll('.buy-package');
+        const paymentSection = document.getElementById('payment-section');
+        const paymentPhone = document.getElementById('payment-phone');
+        const paymentInstruction = document.getElementById('payment-instruction');
+        const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+        const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
+        
+        // Earn elements
+        const showVideosBtn = document.getElementById('show-videos-btn');
+        const showQuizzesBtn = document.getElementById('show-quizzes-btn');
+        const videosSubsection = document.getElementById('videos-subsection');
+        const quizzesSubsection = document.getElementById('quizzes-subsection');
+        const videoContainer = document.getElementById('video-container');
+        const remainingVideos = document.getElementById('remaining-videos');
+        const quizTopics = document.getElementById('quiz-topics');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const quizSelection = document.getElementById('quiz-selection');
+        const quizContainer = document.getElementById('quiz-container');
+        const quizQuestions = document.getElementById('quiz-questions');
+        const submitQuizBtn = document.getElementById('submit-quiz-btn');
+        const quizResult = document.getElementById('quiz-result');
+        const quizScore = document.getElementById('quiz-score');
+        const quizEarnings = document.getElementById('quiz-earnings');
+        const backToQuizzesBtn = document.getElementById('back-to-quizzes-btn');
+        const remainingQuizzes = document.getElementById('remaining-quizzes');
+        
+        // Referral elements
+        const referralLink = document.getElementById('referral-link');
+        const refUsername = document.getElementById('ref-username');
+        const referralEarnings = document.getElementById('referral-earnings');
+        const totalReferrals = document.getElementById('total-referrals');
+        
+        // Withdraw elements
+        const withdrawBalance = document.getElementById('withdraw-balance');
+        const noPasskeyMessage = document.getElementById('no-passkey-message');
+        const passkeyPrice = document.getElementById('passkey-price');
+        const buyPasskeyBtn = document.getElementById('buy-passkey-btn');
+        const withdrawForm = document.getElementById('withdraw-form');
+        const withdrawPhone = document.getElementById('withdraw-phone');
+        const withdrawAmount = document.getElementById('withdraw-amount');
+        const submitWithdrawBtn = document.getElementById('submit-withdraw-btn');
+        const withdrawHistoryBody = document.getElementById('withdraw-history-body');
+        
+        // Account elements
+        const accountUsername = document.getElementById('account-username');
+        const accountPhone = document.getElementById('account-phone');
+        const accountPackage = document.getElementById('account-package');
+        const accountJoined = document.getElementById('account-joined');
+        const logoutBtn = document.getElementById('logout-btn');
+        const deleteAccountBtn = document.getElementById('delete-account-btn');
+        
+        // Stats elements
+        const videosWatched = document.getElementById('videos-watched');
+        const maxVideos = document.getElementById('max-videos');
+        const quizzesTaken = document.getElementById('quizzes-taken');
+        const maxQuizzes = document.getElementById('max-quizzes');
+        const todaysEarnings = document.getElementById('todays-earnings');
+        const totalBalance = document.getElementById('total-balance');
+        
+        // Chat elements
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatBox = document.getElementById('chat-box');
+        const closeChat = document.getElementById('close-chat');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendChatBtn = document.getElementById('send-chat-btn');
+        
+        // Helper Functions
+        function isValidKenyanPhone(phone) {
+            const regex = /^\+254(7|1)\d{8}$/;
+            return regex.test(phone);
+        }
+        
+        function isToday(date) {
+            const today = new Date();
+            return date.getDate() === today.getDate() &&
+                   date.getMonth() === today.getMonth() &&
+                   date.getFullYear() === today.getFullYear();
+        }
+        
+        function getRandomVideos(count) {
+            const shuffled = [...videos].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+        
+        function getQuizQuestions(topic) {
+            const topicQuestions = quizzes[topic] || quizzes.animals;
+            const shuffled = [...topicQuestions].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, 10);
+        }
+        
+        // Check and reset daily limits if needed
+        async function checkDailyReset() {
+            if (!currentUser) return;
+            
+            const userDoc = await db.collection('users').doc(currentUser.uid).get();
+            const userData = userDoc.data();
+            
+            const lastActiveDate = userData.lastActiveDate || userData.joinedDate;
+            const today = new Date().toISOString().split('T')[0];
+            const lastActiveDay = new Date(lastActiveDate).toISOString().split('T')[0];
+            
+            if (lastActiveDay !== today) {
+                await db.collection('users').doc(currentUser.uid).update({
+                    videosWatchedToday: 0,
+                    quizzesTakenToday: 0,
+                    todaysEarnings: 0,
+                    lastActiveDate: new Date().toISOString()
+                });
+            }
+        }
+        
+        // Update dashboard with user data
+        async function updateDashboard() {
+            if (!currentUser) return;
+            
+            await checkDailyReset();
+            
+            // Get fresh user data
+            const userDoc = await db.collection('users').doc(currentUser.uid).get();
+            currentUser = {
+                uid: currentUser.uid,
+                ...userDoc.data()
+            };
+            
+            // Update UI
+            userNameDisplay.textContent = currentUser.username;
+            accountStatus.textContent = currentUser.package ? 'Active' : 'Inactive';
+            accountStatus.className = currentUser.package ? 'account-status active' : 'account-status inactive';
+            userPackage.textContent = currentUser.package ? currentUser.package.charAt(0).toUpperCase() + currentUser.package.slice(1) : 'None';
+            
+            // Update account section
+            accountUsername.textContent = currentUser.username;
+            accountPhone.textContent = currentUser.phone;
+            accountPackage.textContent = currentUser.package ? currentUser.package.charAt(0).toUpperCase() + currentUser.package.slice(1) : 'None';
+            accountJoined.textContent = new Date(currentUser.joinedDate).toLocaleDateString();
+            
+            // Update stats
+            videosWatched.textContent = currentUser.videosWatchedToday || 0;
+            quizzesTaken.textContent = currentUser.quizzesTakenToday || 0;
+            todaysEarnings.textContent = currentUser.todaysEarnings || 0;
+            totalBalance.textContent = currentUser.balance || 0;
+            
+            // Set package limits
+            if (currentUser.package) {
+                const pkg = packages[currentUser.package];
+                maxVideos.textContent = pkg.videoLimit;
+                maxQuizzes.textContent = pkg.quizLimit;
+                remainingVideos.textContent = pkg.videoLimit - (currentUser.videosWatchedToday || 0);
+                remainingQuizzes.textContent = pkg.quizLimit - (currentUser.quizzesTakenToday || 0);
+            }
+            
+            // Update referral link
+            refUsername.textContent = currentUser.username;
+            referralEarnings.textContent = currentUser.referralEarnings || 0;
+            totalReferrals.textContent = currentUser.referrals || 0;
+            
+            // Update withdrawal section
+            withdrawBalance.textContent = currentUser.balance || 0;
+            if (currentUser.package) {
+                passkeyPrice.textContent = packages[currentUser.package].passkeyPrice;
+            }
+            
+            if (currentUser.passkey) {
+                noPasskeyMessage.style.display = 'none';
+                withdrawForm.style.display = 'block';
+            } else {
+                noPasskeyMessage.style.display = 'block';
+                withdrawForm.style.display = 'none';
+            }
+            
+            // Update withdrawal history
+            withdrawHistoryBody.innerHTML = '';
+            (currentUser.withdrawHistory || []).forEach(withdrawal => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="border: 1px solid #ddd; padding: 8px;">${new Date(withdrawal.date).toLocaleDateString()}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${withdrawal.amount}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${withdrawal.status}</td>
+                `;
+                withdrawHistoryBody.appendChild(row);
+            });
+        }
+        
+        // Handle referral program
+        async function handleReferral(refUsername) {
+            // Prevent self-referral
+            if (refUsername === currentUser.username) return;
+            
+            // Check if this referral was already processed
+            if (currentUser.referralHistory && currentUser.referralHistory.includes(refUsername)) return;
+            
+            // Find referring user
+            const refUserQuery = await db.collection('users').where('username', '==', refUsername).get();
+            
+            if (refUserQuery.empty) return;
+            
+            const refUserDoc = refUserQuery.docs[0];
+            const refUserData = refUserDoc.data();
+            const pkg = packages[refUserData.package];
+            
+            if (!pkg) return;
+            
+            // Update both users' data
+            const batch = db.batch();
+            
+            // Update referred user
+            batch.update(db.collection('users').doc(currentUser.uid), {
+                referredBy: refUsername,
+                referralHistory: firebase.firestore.FieldValue.arrayUnion(refUsername)
+            });
+            
+            // Update referring user
+            batch.update(db.collection('users').doc(refUserDoc.id), {
+                referrals: firebase.firestore.FieldValue.increment(1),
+                referralEarnings: firebase.firestore.FieldValue.increment(pkg.referralEarnings),
+                balance: firebase.firestore.FieldValue.increment(pkg.referralEarnings)
+            });
+            
+            await batch.commit();
+            updateDashboard();
+        }
+        
+        // Event Listeners
+        // Navigation between auth pages
+        goToRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginPage.style.display = 'none';
+            registerPage.style.display = 'flex';
+        });
+        
+        goToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerPage.style.display = 'none';
+            loginPage.style.display = 'flex';
+        });
+        
+        goToForgot.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginPage.style.display = 'none';
+            forgotPage.style.display = 'flex';
+        });
+        
+        goToLoginFromForgot.addEventListener('click', (e) => {
+            e.preventDefault();
+            forgotPage.style.display = 'none';
+            loginPage.style.display = 'flex';
+        });
+        
+        // Dashboard navigation
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Update active nav item
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Show corresponding section
+                const section = item.dataset.section;
+                sections.forEach(sec => {
+                    sec.style.display = 'none';
+                });
+                
+                // Hide any subsection that might be open
+                videosSubsection.style.display = 'none';
+                quizzesSubsection.style.display = 'none';
+                paymentSection.style.display = 'none';
+                quizSelection.style.display = 'block';
+                quizContainer.style.display = 'none';
+                quizResult.style.display = 'none';
+                
+                document.getElementById(`${section}-section`).style.display = 'block';
+            });
+        });
+        
+        // Registration process
+        sendCodeBtn.addEventListener('click', async () => {
+            const username = regUsername.value.trim();
+            const phone = regPhone.value.trim();
+            const password = regPassword.value;
+            const confirmPassword = regConfirmPassword.value;
+            
+            if (!username || !phone || !password || !confirmPassword) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+            
+            if (!isValidKenyanPhone(phone)) {
+                alert('Please enter a valid Kenyan phone number starting with +254');
+                return;
+            }
+            
+            try {
+                // Check if username exists in Firestore
+                const usernameSnapshot = await db.collection('users').where('username', '==', username).get();
+                if (!usernameSnapshot.empty) {
+                    alert('Username already exists');
+                    return;
+                }
+                
+                // Check if phone exists in Firestore
+                const phoneSnapshot = await db.collection('users').where('phone', '==', phone).get();
+                if (!phoneSnapshot.empty) {
+                    alert('Phone number already registered');
+                    return;
+                }
+                
+                // Generate verification code
+                const code = Math.floor(1000 + Math.random() * 9000);
+                
+                // In a real app, you would send this via SMS (Twilio, etc.)
+                alert(`Verification code sent to ${phone}: ${code}`);
+                
+                // Store the verification data temporarily
+                sessionStorage.setItem('regData', JSON.stringify({
+                    username,
+                    phone,
+                    password,
+                    code
+                }));
+                
+                sendCodeBtn.style.display = 'none';
+                confirmRegBtn.style.display = 'block';
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+        
+        confirmRegBtn.addEventListener('click', async () => {
+            const regData = JSON.parse(sessionStorage.getItem('regData'));
+            const enteredCode = verificationCode.value.trim();
+            
+            if (enteredCode !== regData.code.toString()) {
+                alert('Invalid verification code');
+                return;
+            }
+            
+            try {
+                // Create user in Firebase Authentication
+                const userCredential = await auth.createUserWithEmailAndPassword(
+                    `${regData.username}@helacash.com`, // Using email pattern since Firebase requires email
+                    regData.password
+                );
+                
+                // Save additional user data to Firestore
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    username: regData.username,
+                    phone: regData.phone,
+                    package: null,
+                    balance: 0,
+                    passkey: false,
+                    videosWatchedToday: 0,
+                    quizzesTakenToday: 0,
+                    todaysEarnings: 0,
+                    referrals: 0,
+                    referralEarnings: 0,
+                    joinedDate: new Date().toISOString(),
+                    videoHistory: [],
+                    quizHistory: [],
+                    withdrawHistory: [],
+                    referralHistory: []
+                });
+                
+                // Check for referral
+                const urlParams = new URLSearchParams(window.location.search);
+                const refUsername = urlParams.get('ref');
+                if (refUsername) {
+                    currentUser = {
+                        uid: userCredential.user.uid,
+                        username: regData.username
+                    };
+                    await handleReferral(refUsername);
+                }
+                
+                alert('Registration successful! Please login.');
+                registerPage.style.display = 'none';
+                loginPage.style.display = 'flex';
+                
+                // Clear form
+                regUsername.value = '';
+                regPhone.value = '';
+                regPassword.value = '';
+                regConfirmPassword.value = '';
+                verificationCode.value = '';
+                confirmRegBtn.style.display = 'none';
+                sendCodeBtn.style.display = 'block';
+                sessionStorage.removeItem('regData');
+            } catch (error) {
+                alert('Registration failed: ' + error.message);
+            }
+        });
+        
+        // Login process
+        loginBtn.addEventListener('click', async () => {
+            const identifier = loginUsername.value.trim();
+            const password = loginPassword.value;
+            
+            try {
+                // Find user by username or phone in Firestore
+                let userQuery;
+                
+                if (identifier.startsWith('+254')) {
+                    userQuery = await db.collection('users').where('phone', '==', identifier).get();
+                } else {
+                    userQuery = await db.collection('users').where('username', '==', identifier).get();
+                }
+                
+                if (userQuery.empty) {
+                    alert('User not found');
+                    return;
+                }
+                
+                const userDoc = userQuery.docs[0];
+                const userData = userDoc.data();
+                
+                // Login using email pattern (username@helacash.com)
+                const userCredential = await auth.signInWithEmailAndPassword(
+                    `${userData.username}@helacash.com`,
+                    password
+                );
+                
+                currentUser = {
+                    uid: userCredential.user.uid,
+                    ...userData
+                };
+                
+                loginPage.style.display = 'none';
+                dashboardPage.style.display = 'block';
+                updateDashboard();
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            }
+        });
+        
+        // Forgot password process
+        sendResetCodeBtn.addEventListener('click', async () => {
+            const phone = forgotPhone.value.trim();
+            
+            if (!isValidKenyanPhone(phone)) {
+                alert('Please enter a valid Kenyan phone number starting with +254');
+                return;
+            }
+            
+            try {
+                // Check if phone exists
+                const phoneSnapshot = await db.collection('users').where('phone', '==', phone).get();
+                if (phoneSnapshot.empty) {
+                    alert('Phone number not registered');
+                    return;
+                }
+                
+                // Generate verification code
+                const code = Math.floor(1000 + Math.random() * 9000);
+                verificationCodes[phone] = code;
+                
+                // In a real app, you would send this via SMS
+                alert(`Verification code sent to ${phone}: ${code}`);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+        
+        resetPasswordBtn.addEventListener('click', async () => {
+            const phone = forgotPhone.value.trim();
+            const code = resetCode.value.trim();
+            const newPass = newPassword.value;
+            const confirmPass = confirmNewPassword.value;
+            
+            if (code !== verificationCodes[phone]?.toString()) {
+                alert('Invalid verification code');
+                return;
+            }
+            
+            if (newPass !== confirmPass) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            if (newPass.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+            
+            try {
+                // Find user by phone
+                const phoneSnapshot = await db.collection('users').where('phone', '==', phone).get();
+                if (phoneSnapshot.empty) {
+                    alert('User not found');
+                    return;
+                }
+                
+                const userDoc = phoneSnapshot.docs[0];
+                const userData = userDoc.data();
+                
+                // Get the user from Firebase Auth
+                const userCredential = await auth.signInWithEmailAndPassword(
+                    `${userData.username}@helacash.com`,
+                    'temp' // We don't know the current password, but we'll handle the error
+                );
+                
+                // Update password
+                await userCredential.user.updatePassword(newPass);
+                
+                alert('Password reset successfully! Please login with your new password.');
+                forgotPage.style.display = 'none';
+                loginPage.style.display = 'flex';
+                
+                // Clear form
+                forgotPhone.value = '';
+                resetCode.value = '';
+                newPassword.value = '';
+                confirmNewPassword.value = '';
+                delete verificationCodes[phone];
+            } catch (error) {
+                if (error.code === 'auth/wrong-password') {
+                    // This is expected since we don't know the current password
+                    // We can still update the password in Firestore for our own records
+                    const phoneSnapshot = await db.collection('users').where('phone', '==', phone).get();
+                    const userDoc = phoneSnapshot.docs[0];
+                    
+                    // In a real app, you would have a proper password reset flow
+                    // For this demo, we'll just update the password in Firestore
+                    await db.collection('users').doc(userDoc.id).update({
+                        password: newPass
+                    });
+                    
+                    alert('Password reset successfully! Please login with your new password.');
+                    forgotPage.style.display = 'none';
+                    loginPage.style.display = 'flex';
+                    
+                    // Clear form
+                    forgotPhone.value = '';
+                    resetCode.value = '';
+                    newPassword.value = '';
+                    confirmNewPassword.value = '';
+                    delete verificationCodes[phone];
+                } else {
+                    alert('Password reset failed: ' + error.message);
+                }
+            }
+        });
+        
+        // Package purchase
+        buyPackageBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const packageType = btn.dataset.package;
+                const pkg = packages[packageType];
+                
+                // Show payment section
+                document.querySelectorAll('#packages-section > div').forEach(div => {
+                    div.style.display = 'none';
+                });
+                paymentSection.style.display = 'block';
+                
+                // Set payment instruction
+                paymentInstruction.textContent = `You will receive a prompt to pay KSh ${pkg.price} to HelaCash Agencies.`;
+                
+                // Store package type for confirmation
+                sessionStorage.setItem('selectedPackage', packageType);
+            });
+        });
+        
+        confirmPaymentBtn.addEventListener('click', async () => {
+            const packageType = sessionStorage.getItem('selectedPackage');
+            const phone = paymentPhone.value.trim();
+            
+            if (!isValidKenyanPhone(phone)) {
+                alert('Please enter a valid Kenyan phone number starting with +254');
+                return;
+            }
+            
+            try {
+                // In a real app, you would integrate with M-Pesa API here
+                // This is just a simulation
+                
+                // Update user package
+                await db.collection('users').doc(currentUser.uid).update({
+                    package: packageType
+                });
+                
+                alert(`Payment successful! Your ${packageType} package is now active.`);
+                
+                // Reset UI
+                paymentSection.style.display = 'none';
+                document.querySelectorAll('#packages-section > div').forEach(div => {
+                    div.style.display = 'block';
+                });
+                paymentPhone.value = '';
+                sessionStorage.removeItem('selectedPackage');
+                
+                // Update dashboard
+                updateDashboard();
+            } catch (error) {
+                alert('Payment failed: ' + error.message);
+            }
+        });
+        
+        cancelPaymentBtn.addEventListener('click', () => {
+            paymentSection.style.display = 'none';
+            document.querySelectorAll('#packages-section > div').forEach(div => {
+                div.style.display = 'block';
+            });
+            paymentPhone.value = '';
+            sessionStorage.removeItem('selectedPackage');
+        });
+        
+        // Earn section - Videos
+        showVideosBtn.addEventListener('click', async () => {
+            if (!currentUser.package) {
+                alert('Please purchase a package first');
+                return;
+            }
+            
+            const pkg = packages[currentUser.package];
+            
+            if (currentUser.videosWatchedToday >= pkg.videoLimit) {
+                alert(`You've reached your daily limit of ${pkg.videoLimit} videos`);
+                return;
+            }
+            
+            videosSubsection.style.display = 'block';
+            quizzesSubsection.style.display = 'none';
+            
+            // Load random videos
+            videoContainer.innerHTML = '';
+            
+            // Get random videos
+            const randomVideos = getRandomVideos(3); // Show 3 videos
+            
+            randomVideos.forEach(video => {
+                const videoItem = document.createElement('div');
+                videoItem.className = 'video-item';
+                videoItem.innerHTML = `
+                    <h4>${video.title}</h4>
+                    <div style="height: 300px; background: #eee; display: flex; justify-content: center; align-items: center;">
+                        <p>${video.source.toUpperCase()} Video Player Placeholder</p>
+                    </div>
+                    <button class="btn watch-video-btn" data-video-id="${video.id}" style="margin-top: 10px;">
+                        Watch Video (Earn KSh ${pkg.videoEarnings})
+                    </button>
+                `;
+                videoContainer.appendChild(videoItem);
+            });
+            
+            // Add event listeners to watch buttons
+            document.querySelectorAll('.watch-video-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const videoId = btn.dataset.videoId;
+                    
+                    // Check if user already watched this video today
+                    if (currentUser.videoHistory && currentUser.videoHistory.some(v => v.videoId === videoId && isToday(new Date(v.date)))) {
+                        alert('You already watched this video today');
+                        return;
+                    }
+                    
+                    try {
+                        // Update user data
+                        await db.collection('users').doc(currentUser.uid).update({
+                            videosWatchedToday: firebase.firestore.FieldValue.increment(1),
+                            todaysEarnings: firebase.firestore.FieldValue.increment(pkg.videoEarnings),
+                            balance: firebase.firestore.FieldValue.increment(pkg.videoEarnings),
+                            videoHistory: firebase.firestore.FieldValue.arrayUnion({
+                                videoId,
+                                date: new Date().toISOString(),
+                                earnings: pkg.videoEarnings
+                            })
+                        });
+                        
+                        alert(`You earned KSh ${pkg.videoEarnings} for watching this video!`);
+                        updateDashboard();
+                    } catch (error) {
+                        alert('Error: ' + error.message);
+                    }
+                });
+            });
+        });
+        
+        // Earn section - Quizzes
+        showQuizzesBtn.addEventListener('click', () => {
+            videosSubsection.style.display = 'none';
+            quizzesSubsection.style.display = 'block';
+        });
+        
+        startQuizBtn.addEventListener('click', () => {
+            const topic = quizTopics.value;
+            startQuiz(topic);
+        });
+        
+        async function startQuiz(topic) {
+            if (!currentUser.package) {
+                alert('Please purchase a package first');
+                return;
+            }
+            
+            const pkg = packages[currentUser.package];
+            
+            if (currentUser.quizzesTakenToday >= pkg.quizLimit) {
+                alert(`You've reached your daily limit of ${pkg.quizLimit} quizzes`);
+                return;
+            }
+            
+            quizSelection.style.display = 'none';
+            quizContainer.style.display = 'block';
+            quizResult.style.display = 'none';
+            
+            // Get quiz questions for the selected topic
+            const questions = getQuizQuestions(topic);
+            
+            // Display questions
+            quizQuestions.innerHTML = '';
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'quiz-question';
+                questionDiv.innerHTML = `
+                    <p><strong>${index + 1}. ${q.question}</strong></p>
+                    ${q.options.map((opt, i) => `
+                        <label>
+                            <input type="radio" name="q${index}" value="${i}">
+                            ${opt}
+                        </label><br>
+                    `).join('')}
+                `;
+                quizQuestions.appendChild(questionDiv);
+            });
+        }
+        
+        submitQuizBtn.addEventListener('click', async () => {
+            const topic = quizTopics.value;
+            const questions = getQuizQuestions(topic);
+            let score = 0;
+            
+            // Calculate score
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selectedOption && parseInt(selectedOption.value) === q.answer) {
+                    score += 2.5; // Each question worth 2.5 points (total 25 for 10 questions)
+                }
+            });
+            
+            // Calculate earnings (2.5 points = 1 KSh for simplicity)
+            const pkg = packages[currentUser.package];
+            const earnings = Math.floor((score / 25) * pkg.quizEarnings);
+            
+            try {
+                // Update user data
+                await db.collection('users').doc(currentUser.uid).update({
+                    quizzesTakenToday: firebase.firestore.FieldValue.increment(1),
+                    todaysEarnings: firebase.firestore.FieldValue.increment(earnings),
+                    balance: firebase.firestore.FieldValue.increment(earnings),
+                    quizHistory: firebase.firestore.FieldValue.arrayUnion({
+                        topic,
+                        date: new Date().toISOString(),
+                        score: Math.round(score),
+                        maxScore: 25,
+                        earnings
+                    })
+                });
+                
+                // Show results
+                quizScore.textContent = Math.round(score);
+                quizEarnings.textContent = earnings;
+                quizQuestions.style.display = 'none';
+                submitQuizBtn.style.display = 'none';
+                quizResult.style.display = 'block';
+                
+                // Update dashboard
+                updateDashboard();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+        
+        backToQuizzesBtn.addEventListener('click', () => {
+            quizSelection.style.display = 'block';
+            quizContainer.style.display = 'none';
+            quizResult.style.display = 'none';
+            quizQuestions.style.display = 'block';
+            submitQuizBtn.style.display = 'block';
+        });
+        
+        // Withdrawal system
+        buyPasskeyBtn.addEventListener('click', async () => {
+            if (!currentUser.package) {
+                alert('Please purchase a package first');
+                return;
+            }
+            
+            const pkg = packages[currentUser.package];
+            const phone = paymentPhone.value.trim();
+            
+            if (!isValidKenyanPhone(phone)) {
+                alert('Please enter a valid Kenyan phone number starting with +254');
+                return;
+            }
+            
+            try {
+                // Simulate payment (replace with M-Pesa API in production)
+                await db.collection('users').doc(currentUser.uid).update({
+                    passkey: true
+                });
+                
+                alert(`Passkey purchased successfully for KSh ${pkg.passkeyPrice}. You can now withdraw funds.`);
+                updateDashboard();
+            } catch (error) {
+                alert('Payment failed: ' + error.message);
+            }
+        });
+        
+        submitWithdrawBtn.addEventListener('click', async () => {
+            const phone = withdrawPhone.value.trim();
+            const amount = parseFloat(withdrawAmount.value);
+            
+            if (!isValidKenyanPhone(phone)) {
+                alert('Please enter a valid Kenyan phone number starting with +254');
+                return;
+            }
+            
+            if (isNaN(amount) || amount < 2000) {
+                alert('Minimum withdrawal amount is KSh 2,000');
+                return;
+            }
+            
+            if (amount > currentUser.balance) {
+                alert('Insufficient balance');
+                return;
+            }
+            
+            try {
+                // In production, you would:
+                // 1. Initiate M-Pesa payout
+                // 2. Only update user if payout is successful
+                
+                // For simulation, we'll just record the withdrawal
+                const withdrawalData = {
+                    date: new Date().toISOString(),
+                    amount,
+                    phone,
+                    status: 'Pending'
+                };
+                
+                await db.collection('users').doc(currentUser.uid).update({
+                    balance: firebase.firestore.FieldValue.increment(-amount),
+                    withdrawHistory: firebase.firestore.FieldValue.arrayUnion(withdrawalData)
+                });
+                
+                alert(`Withdrawal request for KSh ${amount} submitted successfully.`);
+                withdrawPhone.value = '';
+                withdrawAmount.value = '';
+                updateDashboard();
+            } catch (error) {
+                alert('Withdrawal failed: ' + error.message);
+            }
+        });
+        
+        // Account management
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut().then(() => {
+                currentUser = null;
+                dashboardPage.style.display = 'none';
+                loginPage.style.display = 'flex';
+                
+                // Clear login form
+                loginUsername.value = '';
+                loginPassword.value = '';
+            }).catch(error => {
+                alert('Logout failed: ' + error.message);
+            });
+        });
+        
+        deleteAccountBtn.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+                try {
+                    // Delete from Firebase Auth
+                    const user = auth.currentUser;
+                    await user.delete();
+                    
+                    // Delete from Firestore
+                    await db.collection('users').doc(currentUser.uid).delete();
+                    
+                    currentUser = null;
+                    dashboardPage.style.display = 'none';
+                    loginPage.style.display = 'flex';
+                    
+                    // Clear login form
+                    loginUsername.value = '';
+                    loginPassword.value = '';
+                    
+                    alert('Account deleted successfully.');
+                } catch (error) {
+                    alert('Account deletion failed: ' + error.message);
+                }
+            }
+        });
+        
+        // Chatbot functionality
+        chatToggle.addEventListener('click', () => {
+            chatBox.style.display = chatBox.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        closeChat.addEventListener('click', () => {
+            chatBox.style.display = 'none';
+        });
+        
+        sendChatBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            const userMsg = document.createElement('div');
+            userMsg.innerHTML = `<p><strong>You:</strong> ${message}</p>`;
+            chatMessages.appendChild(userMsg);
+            
+            // Clear input
+            chatInput.value = '';
+            
+            // Generate bot response
+            setTimeout(() => {
+                const response = generateResponse(message);
+                const botMsg = document.createElement('div');
+                botMsg.innerHTML = `<p><strong>HelaCash:</strong> ${response}</p>`;
+                chatMessages.appendChild(botMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 500);
+        }
+        
+        function generateResponse(message) {
+            const lowerMsg = message.toLowerCase();
+            
+            if (lowerMsg.includes('package') || lowerMsg.includes('plan')) {
+                return "We offer three packages: Economy (KSh 600), Business (KSh 1,250), and Premium (KSh 2,200). Each package has different earning limits and benefits.";
+            }
+            else if (lowerMsg.includes('withdraw') || lowerMsg.includes('payment')) {
+                return "You can withdraw your earnings once you reach KSh 2,000 and have purchased a withdrawal passkey. Go to the Withdraw section to initiate a payout.";
+            }
+            else if (lowerMsg.includes('refer') || lowerMsg.includes('friend')) {
+                return "You can earn money by referring friends! Share your unique referral link from the Referral section. Earnings depend on your package.";
+            }
+            else if (lowerMsg.includes('video') || lowerMsg.includes('watch')) {
+                return "You can earn money by watching short videos in the Earn section. The number of videos you can watch daily depends on your package.";
+            }
+            else if (lowerMsg.includes('quiz') || lowerMsg.includes('test')) {
+                return "Take quizzes in the Earn section to earn money. Each quiz has 10 questions worth 25 marks total. Daily limits depend on your package.";
+            }
+            else if (lowerMsg.includes('contact') || lowerMsg.includes('support')) {
+                return "You can contact us via email at helacash786@gmail.com or phone at +254 110139665 for further assistance.";
+            }
+            else {
+                return "Thank you for your message. For account-specific questions, please contact our support team via email or phone.";
+            }
+        }
+        
+        // Check for referral on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refUsername = urlParams.get('ref');
+            
+            if (refUsername && !auth.currentUser) {
+                // Store referral for when user registers
+                sessionStorage.setItem('referral', refUsername);
+            }
+            
+            // Check auth state
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // User is signed in
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        currentUser = {
+                            uid: user.uid,
+                            ...userDoc.data()
+                        };
+                        
+                        loginPage.style.display = 'none';
+                        dashboardPage.style.display = 'block';
+                        updateDashboard();
+                        
+                        // Handle referral if came from referral link
+                        if (refUsername) {
+                            await handleReferral(refUsername);
+                        }
+                    } else {
+                        // User doc doesn't exist (shouldn't happen)
+                        await auth.signOut();
+                    }
+                } else {
+                    // User is signed out
+                    currentUser = null;
+                    dashboardPage.style.display = 'none';
+                    loginPage.style.display = 'flex';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
